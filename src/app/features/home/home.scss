@@ -1,0 +1,109 @@
+// TODO global styles.scss
+$primary-color: #0056b3;
+$primary-hover: #004494;
+$bg-color: #f8f9fa;
+$text-main: #333333;
+$text-muted: #6c757d;
+$border-color: #dee2e6;
+
+.home-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: $text-main;
+  text-align: center;
+}
+
+.hero {
+  margin-bottom: 50px;
+
+  h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: #1a1a1a;
+  }
+
+  .description {
+    font-size: 1.2rem;
+    color: $text-main;
+    margin-bottom: 5px;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+    color: $text-muted;
+    font-style: italic;
+  }
+}
+
+.drop-zone {
+  background-color: #ffffff;
+  border: 2px dashed $border-color;
+  border-radius: 12px;
+  padding: 60px 20px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+
+  &.dragging {
+    border-color: $primary-color;
+    background-color: rgba($primary-color, 0.05);
+    transform: scale(1.02);
+  }
+
+  .material-icon {
+    font-size: 48px;
+    display: block;
+    margin-bottom: 15px;
+  }
+
+  h3 {
+    margin: 0 0 10px 0;
+    font-size: 1.3rem;
+  }
+
+  p {
+    color: $text-muted;
+    margin-bottom: 20px;
+  }
+}
+
+// Buttons
+button,
+.btn-primary,
+.btn-secondary {
+  cursor: pointer;
+  padding: 10px 24px;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  transition: background-color 0.2s ease;
+  display: inline-block;
+}
+
+.btn-primary {
+  background-color: $primary-color;
+  color: white;
+
+  &:hover {
+    background-color: $primary-hover;
+  }
+}
+
+.btn-secondary {
+  background-color: #e9ecef;
+  color: $text-main;
+
+  &:hover {
+    background-color: #dde2e6;
+  }
+}
+
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 20px;
+}
