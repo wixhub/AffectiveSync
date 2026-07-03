@@ -10,6 +10,7 @@ Do you want to enable Server-Side Rendering (SSR) and Static Site Generation (SS
 ng s -o
 
 ng add @angular/material
+npm i chart.js
 
 [https://angular.dev/cli/generate/class]
 
