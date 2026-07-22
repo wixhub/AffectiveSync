@@ -1,33 +1,43 @@
+nvm install 22
+nvm use 22
+node -v
+npm install -g @angular/cli@latest
+ng version
 ng new AffectiveSync --directory ./
 
-Do you want to create a 'zoneless' application without zone.js (Developer Preview)? No
+// 'zoneless' application without zone.js
 
 Which stylesheet format would you like to use?
-Sass (SCSS)     [ https://sass-lang.com/documentation/syntax#scss ]
+Sass (SCSS) [ https://sass-lang.com/documentation/syntax#scss ]
 
 Do you want to enable Server-Side Rendering (SSR) and Static Site Generation (SSG/Prerendering)? No
 
 ng s -o
 
-ng add @angular/material
-npm i chart.js
+// add echarts and MediaPipe
+npm install echarts ngx-echarts @mediapipe/tasks-vision
 
 [https://angular.dev/cli/generate/class]
 
-ng generate c features/home
+ng generate c features/dashboard
 ng generate c features/powered
+
+ng generate web-worker face-analyzer
+
+mkdir -p public/wasm
+cp node_modules/@mediapipe/tasks-vision/wasm/* public/wasm/
+curl -o public/wasm/face_landmarker.task https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task
+
+ng generate i core/models/affective-sync.models
+ng generate s core/services/video-processor.service
+
+ng generate s core/services/timeline-sync.service
+
+TODO:
 
 ng generate c core/layout/shell
 ng generate c core/layout/header
 ng generate c core/layout/footer
-
-TODO:
-ng generate c features/research
-ng generate c features/blog
-ng generate c features/contact
-
-ng generate c shared/ui/header
-ng generate c shared/ui/footer
 ng generate c shared/ui/login
 ng generate c shared/ui/register
 
@@ -38,38 +48,38 @@ ng generate g core/guards/activate
 
 src/
 └── app/
-    ├── core/                # Imported ONCE at application startup (singleton core logic)
-    │   ├── layout/          # Application layout templates and structural components
-    │   │   ├── shell/       # Core application shell (combines header, footer, and sidebar)
-    │   │   ├── header/      # Main top navigation bar
-    │   │   └── footer/      # Application bottom footer with links and copyright
-    │   ├── guards/          # AuthGuard, AdminGuard
-    │   ├── interceptors/    # HTTP Request interceptors (e.g., adding JWT tokens)
-    │   └── services/        # Global services (AuthService, ThemeService)
-    │
-    ├── shared/              # Reusable elements shared ACROSS the entire site
-    │   ├── ui/              # Reusable UI elements (buttons, spinners, custom inputs)
-    │   └── pipes/           # Custom pipes (e.g., format-date.pipe.ts)
-    │
-    ├── features/            # Business logic / domain modules (instead of a global pages folder)
-    │   ├── auth/            # Everything related to authentication
-    │   │   ├── login/       # Login component (contains .ts, .html, .scss)
-    │   │   ├── register/    # Register component
-    │   │   └── auth.routes.ts
-    │   │
-    │   ├── .../             # ... feature
-    │   │   ├── components/  # Sub-components used ONLY within the ... feature
-    │   │   │   └── .../ 
-    │   │   ├── pages/       # Specific screens/views for this feature
-    │   │   │   ├── ...-list/
-    │   │   │   └── ...-details/
-    │   │   └── ....routes.ts
-    │   │
-    │   ├── research/        # Everything related to research
-    │   ├── powered/         # Everything related to powered
-    │   ├── blog/            # Everything related to blog
-    │   │
-    │   └── home/            # Home page component
-    │
-    ├── app.config.ts        # Global application configuration (instead of app.module.ts)
-    └── app.routes.ts        # Main routing configuration (loads features via lazy loading)
+├── core/ # Imported ONCE at application startup (singleton core logic)
+│ ├── layout/ # Application layout templates and structural components
+│ │ ├── shell/ # Core application shell (combines header, footer, and sidebar)
+│ │ ├── header/ # Main top navigation bar
+│ │ └── footer/ # Application bottom footer with links and copyright
+│ ├── guards/ # AuthGuard, AdminGuard
+│ ├── interceptors/ # HTTP Request interceptors (e.g., adding JWT tokens)
+│ └── services/ # Global services (AuthService, ThemeService)
+│
+├── shared/ # Reusable elements shared ACROSS the entire site
+│ ├── ui/ # Reusable UI elements (buttons, spinners, custom inputs)
+│ └── pipes/ # Custom pipes (e.g., format-date.pipe.ts)
+│
+├── features/ # Business logic / domain modules (instead of a global pages folder)
+│ ├── auth/ # Everything related to authentication
+│ │ ├── login/ # Login component (contains .ts, .html, .scss)
+│ │ ├── register/ # Register component
+│ │ └── auth.routes.ts
+│ │
+│ ├── .../ # ... feature
+│ │ ├── components/ # Sub-components used ONLY within the ... feature
+│ │ │ └── .../
+│ │ ├── pages/ # Specific screens/views for this feature
+│ │ │ ├── ...-list/
+│ │ │ └── ...-details/
+│ │ └── ....routes.ts
+│ │
+│ ├── research/ # Everything related to research
+│ ├── powered/ # Everything related to powered
+│ ├── blog/ # Everything related to blog
+│ │
+│ └── home/ # Home page component
+│
+├── app.config.ts # Global application configuration (instead of app.module.ts)
+└── app.routes.ts # Main routing configuration (loads features via lazy loading)
