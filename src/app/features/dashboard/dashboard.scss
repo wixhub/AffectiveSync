@@ -1,0 +1,169 @@
+$bg-dark: #0f172a;
+$card-bg: #1e293b;
+$accent-color: #3b82f6;
+$text-main: #f8fafc;
+$text-muted: #94a3b8;
+
+:host {
+  display: block;
+  min-height: 100vh;
+  background-color: $bg-dark;
+  color: $text-main;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+}
+
+.dashboard-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.app-header {
+  margin-bottom: 2rem;
+  h1 {
+    font-size: 2.25rem;
+    font-weight: 700;
+    margin: 0;
+    color: $text-main;
+  }
+  p {
+    color: $text-muted;
+    margin-top: 0.5rem;
+  }
+}
+
+.control-panel {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.upload-btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.75rem 1.5rem;
+  background-color: $accent-color;
+  color: #ffffff;
+  font-weight: 600;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:hover:not(.disabled) {
+    background-color: adjust($accent-color, 8%);
+  }
+
+  &.disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  input[type='file'] {
+    display: none;
+  }
+}
+
+.badge {
+  padding: 0.35rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  background-color: #334155;
+  color: $text-muted;
+
+  &.ready {
+    background-color: #064e3b;
+    color: #34d399;
+  }
+}
+
+.progress-container {
+  position: relative;
+  width: 100%;
+  height: 1.5rem;
+  background-color: #334155;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  margin-bottom: 2rem;
+
+  .progress-bar {
+    height: 100%;
+    background-color: $accent-color;
+    transition: width 0.1s linear;
+  }
+
+  .progress-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #ffffff;
+  }
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card {
+  background-color: $card-bg;
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  border: 1px solid #334155;
+
+  h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 1.125rem;
+    color: $text-main;
+  }
+}
+
+.player-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background-color: #000000;
+  border-radius: 0.5rem;
+  overflow: hidden;
+
+  video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 2rem;
+    text-align: center;
+    color: $text-muted;
+  }
+}
+
+.chart-wrapper {
+  width: 100%;
+  height: 400px;
+
+  .echarts-container {
+    width: 100%;
+    height: 100%;
+  }
+}

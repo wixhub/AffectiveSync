@@ -1,0 +1,59 @@
+<div class="dashboard-container">
+  <!-- Header Banner -->
+  <header class="app-header">
+    <h1>AffectiveSync</h1>
+    <p>Multimodal Affective Computing & Micro-expression Dashboard</p>
+  </header>
+
+  <!-- Upload & Status Control Panel -->
+  <section class="control-panel">
+    <label class="upload-btn" [class.disabled]="processor.isProcessing() || !processor.isReady()">
+      <input
+        type="file"
+        accept="video/*"
+        (change)="onFileSelected($event)"
+        [disabled]="processor.isProcessing() || !processor.isReady()"
+      />
+      <span>{{ processor.isProcessing() ? 'Analyzing Video...' : 'Upload Video File' }}</span>
+    </label>
+
+    <div class="status-indicator">
+      <!-- Status Badge -->
+      @if (processor.isReady()) {
+        <span class="badge badge-success">Worker Ready</span>
+      } @else if (processor.isProcessing()) {
+        <span class="badge badge-warning">Processing {{ processor.progress() }}%</span>
+      } @else {
+        <span class="badge badge-info">Loading ML Models...</span>
+      }
+    </div>
+  </section>
+
+  <!-- Progress Bar during video pre-processing -->
+  <div class="progress-container" *ngIf="processor.isProcessing()">
+    <div class="progress-bar" [style.width.%]="processor.progress()"></div>
+    <span class="progress-text">Analyzing frames: {{ processor.progress() }}%</span>
+  </div>
+
+  <!-- Main Dashboard Grid -->
+  <main class="dashboard-grid">
+    <!-- Left Column: HTML5 Video Player -->
+    <div class="card video-card">
+      <h3>Video Source</h3>
+      <div class="player-wrapper">
+        <video #videoPlayer [src]="sync.videoUrl()" controls (timeupdate)="onTimeUpdate()"></video>
+        <div class="placeholder" *ngIf="!sync.videoUrl()">
+          <p>Please upload a video to start physiological & facial expression analysis.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: ECharts Affective Time-Series -->
+    <div class="card chart-card">
+      <h3>Facial Expression Timeline (Blendshapes)</h3>
+      <div class="chart-wrapper">
+        <div echarts [options]="chartOption()" class="echarts-container"></div>
+      </div>
+    </div>
+  </main>
+</div>
