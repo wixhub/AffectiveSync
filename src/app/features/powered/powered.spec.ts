@@ -8,13 +8,12 @@ describe('Powered', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [Powered]
-    })
-    .compileComponents();
+      imports: [Powered],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(Powered);
     component = fixture.componentInstance;
-    fixture.detectChanges();
+    await fixture.whenStable();
   });
 
   it('should create', () => {

@@ -6,6 +6,4 @@ import { Component } from '@angular/core';
   templateUrl: './powered.html',
   styleUrl: './powered.scss',
 })
-export class Powered {
-
-}
+export class Powered {}
