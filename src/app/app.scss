@@ -1,0 +1,17 @@
+SCSS
+/* Reset base margins/paddings and handle global scrollbars */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden; /* Removes the window scrollbar */
+  background-color: #0f172a; /* Same dark color as dashboard to prevent white flashes */
+  box-sizing: border-box;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
