@@ -17,3 +17,15 @@ export type WorkerOutputMessage =
   | { type: 'READY' }
   | { type: 'FRAME_PROCESSED'; payload: EmotionFrame }
   | { type: 'ERROR'; payload: string };
+
+export interface DemoMockData {
+  fileName: string;
+  duration: number;
+  timestamps: string[];
+  series: {
+    joy: number[];
+    surprise: number[];
+    anger: number[];
+    sadness: number[];
+  };
+}
