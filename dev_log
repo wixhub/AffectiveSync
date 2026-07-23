@@ -33,6 +33,8 @@ ng generate s core/services/video-processor.service
 
 ng generate s core/services/timeline-sync.service
 
+https://www.pexels.com/search/videos/face%20expression/?people_age=adult&people_count=1&orientation=landscape
+
 TODO:
 
 ng generate c core/layout/shell

@@ -1,9 +1,26 @@
+/* ==========================================================================
+   Design Tokens & Color Palette
+   ========================================================================== */
 $bg-dark: #0f172a;
 $card-bg: #1e293b;
 $accent-color: #3b82f6;
+$accent-hover: #2563eb;
 $text-main: #f8fafc;
 $text-muted: #94a3b8;
+$text-highlight: #38bdf8;
+$border-color: #334155;
 
+/* Status Colors */
+$status-success-bg: #064e3b;
+$status-success-text: #34d399;
+$status-warning-bg: #78350f;
+$status-warning-text: #fde047;
+$status-info-bg: #1e3a8a;
+$status-info-text: #93c5fd;
+
+/* ==========================================================================
+   Host Component Layout
+   ========================================================================== */
 :host {
   display: block;
   min-height: 100vh;
@@ -24,70 +41,65 @@ $text-muted: #94a3b8;
   padding: 2rem;
 }
 
+/* ==========================================================================
+   Application Header
+   ========================================================================== */
 .app-header {
   margin-bottom: 2rem;
+
   h1 {
     font-size: 2.25rem;
     font-weight: 700;
     margin: 0;
     color: $text-main;
   }
+
   p {
     color: $text-muted;
     margin-top: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .status-indicator {
+    display: flex;
+    align-items: center;
   }
 }
 
-.control-panel {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  margin-bottom: 1.5rem;
-}
-
-.upload-btn {
-  display: inline-flex;
-  align-items: center;
-  padding: 0.75rem 1.5rem;
-  background-color: $accent-color;
-  color: #ffffff;
-  font-weight: 600;
-  border-radius: 0.5rem;
-  cursor: pointer;
-  transition: background-color 0.2s ease;
-
-  &:hover:not(.disabled) {
-    background-color: adjust($accent-color, 8%);
-  }
-
-  &.disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-  }
-
-  input[type='file'] {
-    display: none;
-  }
-}
-
+/* Status Badges */
 .badge {
+  display: inline-block;
   padding: 0.35rem 0.75rem;
   border-radius: 9999px;
   font-size: 0.875rem;
-  background-color: #334155;
+  font-weight: 500;
+  background-color: $border-color;
   color: $text-muted;
 
-  &.ready {
-    background-color: #064e3b;
-    color: #34d399;
+  &.badge-success {
+    background-color: $status-success-bg;
+    color: $status-success-text;
+  }
+
+  &.badge-warning {
+    background-color: $status-warning-bg;
+    color: $status-warning-text;
+  }
+
+  &.badge-info {
+    background-color: $status-info-bg;
+    color: $status-info-text;
   }
 }
 
+/* ==========================================================================
+   Global Progress Bar
+   ========================================================================== */
 .progress-container {
   position: relative;
   width: 100%;
   height: 1.5rem;
-  background-color: #334155;
+  background-color: $border-color;
   border-radius: 0.5rem;
   overflow: hidden;
   margin-bottom: 2rem;
@@ -106,9 +118,13 @@ $text-muted: #94a3b8;
     font-size: 0.875rem;
     font-weight: 600;
     color: #ffffff;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
   }
 }
 
+/* ==========================================================================
+   Dashboard Grid Layout
+   ========================================================================== */
 .dashboard-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -119,11 +135,14 @@ $text-muted: #94a3b8;
   }
 }
 
+/* Card Base Container */
 .card {
   background-color: $card-bg;
   border-radius: 0.75rem;
   padding: 1.5rem;
-  border: 1px solid #334155;
+  border: 1px solid $border-color;
+  display: flex;
+  flex-direction: column;
 
   h3 {
     margin-top: 0;
@@ -133,37 +152,129 @@ $text-muted: #94a3b8;
   }
 }
 
-.player-wrapper {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  background-color: #000000;
-  border-radius: 0.5rem;
-  overflow: hidden;
-
-  video {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-  }
-
-  .placeholder {
+/* ==========================================================================
+   Video Player Card & Control Panel
+   ========================================================================== */
+.video-card {
+  /* Inline Header for Video Source and Dynamic Filename */
+  .card-header-inline {
     display: flex;
     align-items: center;
-    justify-content: center;
-    height: 100%;
-    padding: 2rem;
-    text-align: center;
-    color: $text-muted;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+
+    h3 {
+      margin: 0;
+      white-space: nowrap;
+    }
+
+    .file-name {
+      color: $text-highlight;
+      font-weight: 600;
+      font-size: 1rem;
+      word-break: break-all;
+    }
+  }
+
+  /* HTML5 Video Wrapper */
+  .player-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background-color: #000000;
+    border-radius: 0.5rem;
+    overflow: hidden;
+
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      padding: 2rem;
+      text-align: center;
+      color: $text-muted;
+    }
+  }
+
+  /* Control Panel under the Video Player */
+  .control-panel {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 1rem;
+
+    @media (max-width: 640px) {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    /* Demo Version Notice */
+    .demo-notice {
+      flex: 1;
+      font-size: 0.825rem;
+      color: $text-muted;
+      line-height: 1.4;
+
+      p {
+        margin: 0;
+      }
+
+      strong {
+        color: $text-main;
+      }
+    }
+
+    /* Upload Button Styles */
+    .upload-btn {
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.75rem 1.25rem;
+      background-color: $accent-color;
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 0.875rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition:
+        background-color 0.2s ease,
+        opacity 0.2s ease;
+
+      &:hover:not(.disabled) {
+        background-color: $accent-hover;
+      }
+
+      &.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+
+      input[type='file'] {
+        display: none;
+      }
+    }
   }
 }
 
-.chart-wrapper {
-  width: 100%;
-  height: 400px;
-
-  .echarts-container {
+/* ==========================================================================
+   Chart Card & Visualization
+   ========================================================================== */
+.chart-card {
+  .chart-wrapper {
     width: 100%;
-    height: 100%;
+    height: 400px;
+
+    .echarts-container {
+      width: 100%;
+      height: 100%;
+    }
   }
 }
