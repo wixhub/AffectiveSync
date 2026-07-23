@@ -14,11 +14,25 @@ export class TimelineSyncService {
   // Video source URL for the main video player
   public videoUrl = signal<string | null>(null);
 
-  public setVideoSource(file: File): void {
-    if (this.videoUrl()) {
-      URL.revokeObjectURL(this.videoUrl()!);
+  /**
+   * Sets the video source from either a File object or a static URL string.
+   * Automatically cleans up existing object URLs to prevent memory leaks.
+   */
+  public setVideoSource(file: File | string): void {
+    const currentUrl = this.videoUrl();
+
+    // Revoke object URL only if it was created dynamically via Blob/File
+    if (currentUrl && currentUrl.startsWith('blob:')) {
+      URL.revokeObjectURL(currentUrl);
     }
-    this.videoUrl.set(URL.createObjectURL(file));
+
+    if (typeof file === 'string') {
+      // Direct path (e.g. 'sample.mp4')
+      this.videoUrl.set(file);
+    } else {
+      // Dynamic File uploaded by the user
+      this.videoUrl.set(URL.createObjectURL(file));
+    }
   }
 
   public setDataset(data: EmotionFrame[]): void {
