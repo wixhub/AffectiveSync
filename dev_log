@@ -12,6 +12,9 @@ Sass (SCSS) [ https://sass-lang.com/documentation/syntax#scss ]
 
 Do you want to enable Server-Side Rendering (SSR) and Static Site Generation (SSG/Prerendering)? No
 
+$ npx @angular/cli ai init
+Agents.md [ https://agents.md/ ]
+
 ng s -o
 
 // add echarts and MediaPipe
@@ -36,6 +39,31 @@ ng generate s core/services/timeline-sync.service
 https://www.pexels.com/search/videos/face%20expression/?people_age=adult&people_count=1&orientation=landscape
 
 TODO:
+,,,,,,,,,,,,,,,
+Act as a Principal Frontend & ML Engineer. I am working on the AffectiveSync dashboard (Angular + MediaPipe + ECharts) for multimodal facial expression and micro-expression analysis.
+
+Here is a backlog of high-priority improvements and feature requests to implement in future iterations:
+
+1. **Performance & Processing Optimization:**
+   - [ ] Implement Web Workers / OffscreenCanvas for MediaPipe frame extraction to prevent blocking the UI/main thread during heavy video analysis.
+   - [ ] Add frame-skipping or configurable sampling rate (e.g., 5 FPS vs 30 FPS) based on user performance mode settings.
+
+2. **UI/UX & Chart Enhancements:**
+   - [ ] Add interactive chart synchronization: clicking or dragging on the ECharts timeline should seek the HTML5 video player (`video.currentTime`) to the exact timestamp.
+   - [ ] Implement Zoom & Pan controls (`dataZoom` component in ECharts) to allow detailed micro-expression inspection over longer videos.
+   - [ ] Add peak/spike detection highlighting (e.g., mark severe micro-expression bursts on the timeline with visual indicators).
+
+3. **Data Export & Reporting:**
+   - [ ] Add a "Export Data" button allowing users to download the frame-by-frame emotion metrics in CSV and JSON formats.
+   - [ ] Add a "Download Chart Snapshot" feature (`chart.getDataURL()`) for generating report images.
+
+4. **Error Handling & File Validation:**
+   - [ ] Add client-side video validation (check file duration, size limits < 50MB, and codec compatibility before triggering ML execution).
+   - [ ] Provide user-friendly error toast notifications if MediaPipe model initialization fails or no face is detected in the video.
+
+Please analyze this backlog and help me implement these features step-by-step.
+
+,,,,,,,,
 
 ng generate c core/layout/shell
 ng generate c core/layout/header
