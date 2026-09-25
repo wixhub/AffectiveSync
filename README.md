@@ -1,10 +1,10 @@
 # Affective Synchronization
 
-This is an Angular-based demo app that analyzes facial affect from video streams and synchronizes affective data with an interactive timeline. It includes a web worker for face analysis, services for video processing and timeline synchronization and a minimal UI for visualization and playback.
+This is an Angular-based demo app that analyzes facial affect from video streams and synchronizes affective data with an interactive timeline. It includes services for face analysis, video processing and timeline synchronization, along with a minimal UI for visualization and playback.
 
 ## Features
 
-- Real-time face analysis running in a Web Worker
+- Client-side face analysis powered by MediaPipe computer vision models
 - Video processing and timeline synchronization services
 - Simple dashboard UI for visualization and playback
 
