@@ -1,59 +1,52 @@
-# AffectiveSync
+# Affective Synchronization
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.0.7.
+This is an Angular-based demo app that analyzes facial affect from video streams and synchronizes affective data with an interactive timeline. It includes a web worker for face analysis, services for video processing and timeline synchronization and a minimal UI for visualization and playback.
 
-## Development server
+## Features
 
-To start a local development server, run:
+- Real-time face analysis running in a Web Worker
+- Video processing and timeline synchronization services
+- Simple dashboard UI for visualization and playback
 
-```bash
-ng serve
-```
+## Prerequisites
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+- Node.js (LTS recommended)
+- npm (or yarn/pnpm)
 
-## Code scaffolding
+## Quick start
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Install dependencies and run the dev server:
 
 ```bash
-ng generate --help
+npm install
+npm run start
 ```
 
-## Building
+Open http://localhost:4200 in your browser.
 
-To build the project run:
+## Available scripts
 
-```bash
-ng build
-```
+- `npm run start` — Run development server (Angular dev server)
+- `npm run build` — Build production bundles
+- `npm run test` — Run unit tests
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Use the corresponding `ng` commands if you prefer the Angular CLI directly.
 
-## Running unit tests
+## Project structure (high level)
 
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+- `src/app` — Application entry and routes
+- `src/app/core/services` — Core services (`timeline-sync.service.ts`, `video-processor.service.ts`)
+- `src/app/core/face-analyzer.worker.ts` — Web Worker performing face analysis
+- `src/app/features` — Feature modules and UI (dashboard, powered page)
 
-```bash
-ng test
-```
+## Contributing
 
-## Running end-to-end tests
+Contributions are welcome. Open an issue or submit a pull request. Keep changes small and focused; add tests for new behavior when possible.
 
-For end-to-end (e2e) testing, run:
+## License
 
-```bash
-ng e2e
-```
+This repository is licensed under the terms in the `LICENSE` file.
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## Contact
 
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+If you have questions about the project, open an issue or contact the maintainers via the repository.
