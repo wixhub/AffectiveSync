@@ -1,15 +1,12 @@
 import { Routes } from '@angular/router';
-import { Powered } from './features/powered/powered';
-import { Dashboard } from './features/dashboard/dashboard';
 
 export const routes: Routes = [
-  // Redirect root path to /dashboard
-  { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
+  // Load dashboard at the root path
+  {
+    path: '',
+    loadComponent: () => import('./features/dashboard/dashboard').then((m) => m.Dashboard),
+  },
 
-  { path: 'dashboard', component: Dashboard },
-
-  { path: 'powered', component: Powered },
-
-  // Wildcard route to handle 404s by redirecting to home
-  { path: '**', redirectTo: '/dashboard', pathMatch: 'full' },
+  // Wildcard route safely redirects 404s back to root
+  { path: '**', redirectTo: '', pathMatch: 'full' },
 ];
