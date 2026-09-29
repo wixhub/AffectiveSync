@@ -1,12 +1,18 @@
 import { Routes } from '@angular/router';
+import { Shell } from './core/layout/shell/shell';
 
 export const routes: Routes = [
-  // Load dashboard at the root path
+  // Shell acts as a wrapper for all main pages
   {
     path: '',
-    loadComponent: () => import('./features/dashboard/dashboard').then((m) => m.Dashboard),
+    component: Shell,
+    children: [
+      {
+        path: '',
+        loadComponent: () => import('./features/dashboard/dashboard').then((m) => m.Dashboard),
+      },
+    ],
   },
-
   // Wildcard route safely redirects 404s back to root
   { path: '**', redirectTo: '', pathMatch: 'full' },
 ];
