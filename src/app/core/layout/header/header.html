@@ -1,0 +1,12 @@
+<div>
+  <h2>Affective Synchronization</h2>
+  <p>Multimodal Affective Computing & Micro-expression Dashboard</p>
+</div>
+<!-- Status Badge -->
+@if (processor.isReady()) {
+  <span class="badge badge-success">AI Ready</span>
+} @else if (processor.isProcessing()) {
+  <span class="badge badge-warning">Processing {{ processor.progress() }}%</span>
+} @else {
+  <span class="badge badge-info">Loading ML Models...</span>
+}

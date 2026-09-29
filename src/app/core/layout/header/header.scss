@@ -1,0 +1,63 @@
+/* ==========================================================================
+   Application Header
+   ========================================================================== */
+
+@use '../../../../styles.scss' as *;
+
+:host {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0 0.5rem;
+  padding: 0rem 2rem;
+  background-color: rgba($card-bg, 0.75);
+  border-bottom: 1px solid $border-color;
+  border-radius: 10px;
+}
+
+h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0.5rem 0;
+  color: $text-main;
+}
+
+p {
+  color: $text-muted;
+  margin-top: 0.01rem;
+  font-size: 0.9rem;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+/* Status Badges */
+.badge {
+  padding: 0.35rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  background-color: $border-color;
+  color: $text-muted;
+
+  &.badge-success {
+    background-color: $status-success-bg;
+    color: $status-success-text;
+  }
+
+  &.badge-warning {
+    background-color: $status-warning-bg;
+    color: $status-warning-text;
+  }
+
+  &.badge-info {
+    background-color: $status-info-bg;
+    color: $status-info-text;
+  }
+}
