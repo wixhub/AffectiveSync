@@ -1,63 +1,36 @@
-import { Component, ElementRef, OnInit, ViewChild, computed, inject, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import {
+  Component,
+  ElementRef,
+  OnInit,
+  AfterViewInit,
+  ViewChild,
+  computed,
+  inject,
+} from '@angular/core';
 import { NgxEchartsDirective, provideEchartsCore } from 'ngx-echarts';
 import * as echarts from 'echarts/core';
-import { LineChart } from 'echarts/charts';
-import {
-  GridComponent,
-  TooltipComponent,
-  LegendComponent,
-  MarkLineComponent,
-} from 'echarts/components';
-import { CanvasRenderer } from 'echarts/renderers';
 
 import { VideoProcessorService } from '../../core/services/video-processor.service';
 import { TimelineSyncService } from '../../core/services/timeline-sync.service';
-import { DemoMockData, EmotionFrame } from '../../core/models/affective-sync.models';
+import { MarkLineOptions } from '../../core/models/affective-sync.models';
 import { BASE_CHART_CONFIG, buildChartSeries } from './dashboard-chart.config';
-
-echarts.use([
-  LineChart,
-  GridComponent,
-  TooltipComponent,
-  LegendComponent,
-  MarkLineComponent,
-  CanvasRenderer,
-]);
 
 @Component({
   selector: 'app-dashboard',
-  standalone: true,
-  imports: [CommonModule, NgxEchartsDirective],
+  imports: [NgxEchartsDirective],
   providers: [provideEchartsCore({ echarts })],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',
 })
-export class Dashboard implements OnInit {
+export class Dashboard implements OnInit, AfterViewInit {
   public processor = inject(VideoProcessorService);
   public sync = inject(TimelineSyncService);
-  private http = inject(HttpClient);
 
   @ViewChild('videoPlayer') videoPlayer!: ElementRef<HTMLVideoElement>;
 
-  // Signal state management
-  public currentFileName = signal<string>('sample.mp4');
-  public currentTime = signal<number>(0);
-
-  // ECharts data signals
-  private chartTimestamps = signal<string[]>([]);
-  private seriesJoy = signal<number[]>([]);
-  private seriesSurprise = signal<number[]>([]);
-  private seriesAnger = signal<number[]>([]);
-  private seriesSadness = signal<number[]>([]);
-
-  /**
-   * Reactive ECharts configuration based on Signals state
-   */
   public chartOption = computed(() => {
-    const timestamps = this.chartTimestamps();
-    const currentTimeFormatted = `${this.currentTime().toFixed(1)}s`;
+    const timestamps = this.sync.chartTimestamps();
+    const currentTimeFormatted = `${this.sync.currentTime().toFixed(1)}s`;
     const markLine = this.createCurrentTimeMarkLine(timestamps, currentTimeFormatted);
 
     return {
@@ -71,10 +44,10 @@ export class Dashboard implements OnInit {
       },
       series: buildChartSeries(
         {
-          joy: this.seriesJoy(),
-          surprise: this.seriesSurprise(),
-          anger: this.seriesAnger(),
-          sadness: this.seriesSadness(),
+          joy: this.sync.seriesJoy(),
+          surprise: this.sync.seriesSurprise(),
+          anger: this.sync.seriesAnger(),
+          sadness: this.sync.seriesSadness(),
         },
         markLine,
       ),
@@ -82,131 +55,64 @@ export class Dashboard implements OnInit {
   });
 
   ngOnInit(): void {
-    // 1. Load static demo state instantly
-    this.loadDemoInitialState();
+    this.sync.loadDemoInitialState(() => {
+      this.playVideoSafely();
+    });
 
-    // 2. Pre-load ML models in background so processor.isReady becomes true
-    this.processor.initMediaPipe().catch((err) => {
+    this.processor.initialize().catch((err) => {
       console.error('Failed to pre-initialize MediaPipe models:', err);
     });
   }
 
-  /**
-   * Load initial sample state from JSON mock without running ML model
-   */
-  private loadDemoInitialState(): void {
-    const demoJsonPath = 'sample-data.json';
-    const sampleVideoPath = 'sample.mp4';
-
-    this.http.get<DemoMockData>(demoJsonPath).subscribe({
-      next: (demoData) => {
-        this.currentFileName.set(demoData.fileName || 'sample.mp4');
-        this.sync.setVideoSource(sampleVideoPath);
-
-        // Populate initial timeline chart metrics
-        this.chartTimestamps.set(demoData.timestamps);
-        this.seriesJoy.set(demoData.series.joy);
-        this.seriesSurprise.set(demoData.series.surprise);
-        this.seriesAnger.set(demoData.series.anger);
-        this.seriesSadness.set(demoData.series.sadness);
-      },
-      error: (err) => {
-        console.warn('Failed to load initial demo JSON file:', err);
-      },
-    });
+  ngAfterViewInit(): void {
+    this.playVideoSafely();
   }
 
-  /**
-   * Handles user custom video file selection and triggers real-time ML processing.
-   */
+  private playVideoSafely(): void {
+    setTimeout(() => {
+      if (this.videoPlayer?.nativeElement) {
+        this.videoPlayer.nativeElement.muted = true;
+        this.videoPlayer.nativeElement.play().catch((error) => {
+          console.warn('Browser autoplay prevented or interrupted:', error);
+        });
+      }
+    }, 150);
+  }
+
   public async onFileSelected(event: Event): Promise<void> {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
       const file = input.files[0];
 
-      // 1. Instantly clear chart and set video source
-      this.clearChartData();
-      this.currentFileName.set(file.name);
+      this.sync.clearChartData();
       this.sync.setVideoSource(file);
 
       try {
-        // 2. Process video frame-by-frame (returns Promise<EmotionFrame[]>)
+        // 1. Wait for frame-by-frame ML processing to finish
         const frames = await this.processor.processVideo(file);
 
-        // 3. Map array of frames into ECharts timeline data arrays
-        this.updateChartFromEmotionFrames(frames);
+        // 2. Update chart metrics with processed data
+        this.sync.updateChartFromEmotionFrames(frames, file.name);
+
+        // 3. Trigger playback right after analysis completes successfully
+        this.playVideoSafely();
       } catch (error) {
         console.error('Failed to process video file:', error);
+        this.sync.errorMessage.set('Failed to analyze facial expressions from the selected video.');
       }
     }
   }
 
-  /**
-   * Transforms EmotionFrame[] array into structured series for ECharts
-   */
-  private updateChartFromEmotionFrames(frames: EmotionFrame[]): void {
-    const timestamps: string[] = [];
-    const joy: number[] = [];
-    const surprise: number[] = [];
-    const anger: number[] = [];
-    const sadness: number[] = [];
-
-    frames.forEach((frame) => {
-      // Assuming frame object contains timestamp and score properties
-      // Adjust key names (e.g., frame.timestamp, frame.joy) matching your EmotionFrame interface
-      timestamps.push(`${frame.timestamp.toFixed(1)}s`);
-      joy.push(frame.joy ?? 0);
-      surprise.push(frame.surprise ?? 0);
-      anger.push(frame.anger ?? 0);
-      sadness.push(frame.sadness ?? 0);
-    });
-
-    this.chartTimestamps.set(timestamps);
-    this.seriesJoy.set(joy);
-    this.seriesSurprise.set(surprise);
-    this.seriesAnger.set(anger);
-    this.seriesSadness.set(sadness);
-  }
-
-  /**
-   * Clears all chart series instantly
-   */
-  private clearChartData(): void {
-    this.currentTime.set(0);
-    this.chartTimestamps.set([]);
-    this.seriesJoy.set([]);
-    this.seriesSurprise.set([]);
-    this.seriesAnger.set([]);
-    this.seriesSadness.set([]);
-  }
-
-  /**
-   * Updates chart datasets after ML processing completes
-   */
-  private updateChartWithProcessedData(data: {
-    timestamps: string[];
-    series: { joy: number[]; surprise: number[]; anger: number[]; sadness: number[] };
-  }): void {
-    this.chartTimestamps.set(data.timestamps);
-    this.seriesJoy.set(data.series.joy);
-    this.seriesSurprise.set(data.series.surprise);
-    this.seriesAnger.set(data.series.anger);
-    this.seriesSadness.set(data.series.sadness);
-  }
-
-  /**
-   * Tracks video playhead time updates
-   */
   public onTimeUpdate(): void {
     if (this.videoPlayer?.nativeElement) {
-      this.currentTime.set(this.videoPlayer.nativeElement.currentTime);
+      this.sync.updateTime(this.videoPlayer.nativeElement.currentTime);
     }
   }
 
-  /**
-   * Renders vertical playback indicator on the chart
-   */
-  private createCurrentTimeMarkLine(timestamps: string[], currentFormattedTime: string) {
+  private createCurrentTimeMarkLine(
+    timestamps: string[],
+    currentFormattedTime: string,
+  ): MarkLineOptions | undefined {
     if (!timestamps.length) return undefined;
 
     return {

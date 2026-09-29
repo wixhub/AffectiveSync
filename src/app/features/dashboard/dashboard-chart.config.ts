@@ -1,8 +1,24 @@
 import { EChartsOption } from 'echarts';
+import * as echarts from 'echarts/core';
+import { LineChart } from 'echarts/charts';
+import {
+  GridComponent,
+  TooltipComponent,
+  LegendComponent,
+  MarkLineComponent,
+} from 'echarts/components';
+import { CanvasRenderer } from 'echarts/renderers';
+import { MarkLineOptions } from '../../core/models/affective-sync.models';
 
-/**
- * Base configuration options for the ECharts Timeline
- */
+echarts.use([
+  LineChart,
+  GridComponent,
+  TooltipComponent,
+  LegendComponent,
+  MarkLineComponent,
+  CanvasRenderer,
+]);
+
 export const BASE_CHART_CONFIG: Partial<EChartsOption> = {
   backgroundColor: 'transparent',
   tooltip: {
@@ -31,9 +47,6 @@ export const BASE_CHART_CONFIG: Partial<EChartsOption> = {
   },
 };
 
-/**
- * Default style properties applied to each line series
- */
 const COMMON_SERIES_PROPERTIES = {
   type: 'line',
   smooth: true,
@@ -43,9 +56,6 @@ const COMMON_SERIES_PROPERTIES = {
   hoverAnimation: true,
 };
 
-/**
- * Generates structured series list mapped to dynamic data
- */
 export function buildChartSeries(
   data: {
     joy: number[];
@@ -53,7 +63,7 @@ export function buildChartSeries(
     anger: number[];
     sadness: number[];
   },
-  markLineOptions?: any,
+  markLineOptions?: MarkLineOptions,
 ) {
   return [
     {

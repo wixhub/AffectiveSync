@@ -1,77 +1,64 @@
-<div class="dashboard-container">
-  <!-- Header Banner -->
-  <header class="app-header">
-    <h1>AffectiveSync</h1>
-    <p>Multimodal Affective Computing & Micro-expression Dashboard</p>
-    <div class="status-indicator">
-      <!-- Status Badge -->
-      @if (processor.isReady()) {
-        <span class="badge badge-success">Worker Ready</span>
-      } @else if (processor.isProcessing()) {
-        <span class="badge badge-warning">Processing {{ processor.progress() }}%</span>
-      } @else {
-        <span class="badge badge-info">Loading ML Models...</span>
+<!-- Progress Bar during video pre-processing -->
+@if (processor.isProcessing()) {
+  <div class="progress-container">
+    <div class="progress-bar" [style.width.%]="processor.progress()"></div>
+    <span class="progress-text">Analyzing frames: {{ processor.progress() }}%</span>
+  </div>
+}
+
+<!-- Main Dashboard Grid -->
+<main class="dashboard-grid">
+  <!-- Left Column: HTML5 Video Player -->
+  <div class="card video-card">
+    <!-- Dynamic Title with Filename -->
+    <div class="card-header-inline">
+      <h3>Video Source:</h3>
+      <span class="file-name">{{ sync.currentFileName() || 'sample.mp4' }}</span>
+    </div>
+
+    <div class="player-wrapper">
+      <video
+        #videoPlayer
+        [src]="sync.videoUrl()"
+        (timeupdate)="onTimeUpdate()"
+        [autoplay]="true"
+        [muted]="true"
+        playsinline
+        controls
+      ></video>
+      @if (!sync.videoUrl()) {
+        <div class="placeholder">
+          <p>Please upload a video to start physiological & facial expression analysis</p>
+        </div>
       }
     </div>
-  </header>
 
-  <!-- Progress Bar during video pre-processing -->
-  @if (processor.isProcessing()) {
-    <div class="progress-container">
-      <div class="progress-bar" [style.width.%]="processor.progress()"></div>
-      <span class="progress-text">Analyzing frames: {{ processor.progress() }}%</span>
-    </div>
-  }
-
-  <!-- Main Dashboard Grid -->
-  <main class="dashboard-grid">
-    <!-- Left Column: HTML5 Video Player -->
-    <div class="card video-card">
-      <!-- Dynamic Title with Filename -->
-      <div class="card-header-inline">
-        <h3>Video Source:</h3>
-        <span class="file-name">{{ currentFileName() || 'sample.mp4' }}</span>
+    <!-- Upload & Demo Notice Panel -->
+    <section class="control-panel">
+      <div class="demo-notice">
+        <p>
+          ℹ️ <strong>Demo mode:</strong> Processing runs entirely in-browser. For optimal
+          performance, please upload short video files (max ~50MB).
+        </p>
       </div>
 
-      <div class="player-wrapper">
-        <video #videoPlayer [src]="sync.videoUrl()" controls (timeupdate)="onTimeUpdate()"></video>
-        @if (!sync.videoUrl()) {
-          <div class="placeholder">
-            <p>Please upload a video to start physiological & facial expression analysis</p>
-          </div>
-        }
-      </div>
+      <label class="upload-btn" [class.disabled]="processor.isProcessing() || !processor.isReady()">
+        <input
+          type="file"
+          accept="video/*"
+          (change)="onFileSelected($event)"
+          [disabled]="processor.isProcessing() || !processor.isReady()"
+        />
+        <span>{{ processor.isProcessing() ? 'Analyzing Video...' : 'Upload Video File' }}</span>
+      </label>
+    </section>
+  </div>
 
-      <!-- Upload & Demo Notice Panel -->
-      <section class="control-panel">
-        <div class="demo-notice">
-          <p>
-            ℹ️ <strong>Demo mode:</strong> Processing runs entirely in-browser. For optimal
-            performance, please upload short video files (max ~50MB).
-          </p>
-        </div>
-
-        <label
-          class="upload-btn"
-          [class.disabled]="processor.isProcessing() || !processor.isReady()"
-        >
-          <input
-            type="file"
-            accept="video/*"
-            (change)="onFileSelected($event)"
-            [disabled]="processor.isProcessing() || !processor.isReady()"
-          />
-          <span>{{ processor.isProcessing() ? 'Analyzing Video...' : 'Upload Video File' }}</span>
-        </label>
-      </section>
+  <!-- Right Column: ECharts Affective Time-Series -->
+  <div class="card chart-card">
+    <h3>Facial Expression Timeline (Blendshapes)</h3>
+    <div class="chart-wrapper">
+      <div echarts [options]="chartOption()" class="echarts-container"></div>
     </div>
-
-    <!-- Right Column: ECharts Affective Time-Series -->
-    <div class="card chart-card">
-      <h3>Facial Expression Timeline (Blendshapes)</h3>
-      <div class="chart-wrapper">
-        <div echarts [options]="chartOption()" class="echarts-container"></div>
-      </div>
-    </div>
-  </main>
-</div>
+  </div>
+</main>
