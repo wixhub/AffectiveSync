@@ -4,9 +4,23 @@ This is an Angular-based demo app that analyzes facial affect from video streams
 
 ## Features
 
-- Client-side face analysis powered by MediaPipe computer vision models
-- Video processing and timeline synchronization services
-- Simple dashboard UI for visualization and playback
+- **Client-Side AI & Computer Vision:** Integrates MediaPipe Tasks Vision (`FaceLandmarker`) directly in the browser to process video frames frame-by-frame.
+
+- **Modern Angular Reactivity:** Built with Angular Signals (`signal`, `computed`) for high-performance, fine-grained state management.
+
+- **Interactive Visualization:** Synchronizes HTML5 video playback with Apache ECharts timelines using dynamic vertical playhead markers.
+
+- **Memory-Safe Architecture:** Handles dynamic Blob/File object URL cleanup to prevent memory leaks during video uploads.
+
+## Project structure (high level)
+
+- `src/app` — Application entry and routes
+
+- `src/app/core/services` — Core business logic and state
+
+- `src/app/core/models` — TypeScript models and typed interfaces
+
+- `src/app/features/dashboard` — Dashboard component, chart configurations and UI templates
 
 ## Prerequisites
 
@@ -31,13 +45,6 @@ Open http://localhost:4200 in your browser.
 - `npm run test` — Run unit tests
 
 Use the corresponding `ng` commands if you prefer the Angular CLI directly.
-
-## Project structure (high level)
-
-- `src/app` — Application entry and routes
-- `src/app/core/services` — Core services (`timeline-sync.service.ts`, `video-processor.service.ts`)
-- `src/app/core/face-analyzer.worker.ts` — Web Worker performing face analysis
-- `src/app/features` — Feature modules and UI (dashboard, powered page)
 
 ## Contributing
 
