@@ -1,51 +1,52 @@
-import { Injectable, signal } from '@angular/core';
-import { FaceLandmarker, FilesetResolver } from '@mediapipe/tasks-vision';
+import { Service, signal } from '@angular/core';
 import { EmotionFrame } from '../models/affective-sync.models';
+import { FaceLandmarker, FilesetResolver } from '@mediapipe/tasks-vision';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Service()
 export class VideoProcessorService {
-  public isReady = signal<boolean>(false);
-  public isProcessing = signal<boolean>(false);
-  public progress = signal<number>(0);
+  public readonly isReady = signal<boolean>(false);
+  public readonly isProcessing = signal<boolean>(false);
+  public readonly progress = signal<number>(0);
 
-  private landmarker: FaceLandmarker | null = null;
-
-  constructor() {}
-
-  /**
-   * Lazy initializes the MediaPipe FaceLandmarker instance.
-   * Prevents blocking application startup by loading WASM assets on demand.
-   */
-  public async initMediaPipe(): Promise<void> {
-    if (this.landmarker) return;
-
-    const vision = await FilesetResolver.forVisionTasks(
-      'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm',
-    );
-
-    this.landmarker = await FaceLandmarker.createFromOptions(vision, {
-      baseOptions: {
-        modelAssetPath:
-          'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task',
-        delegate: 'GPU',
-      },
-      outputFaceBlendshapes: true,
-      runningMode: 'IMAGE',
-    });
-
-    this.isReady.set(true);
+  public async initialize(): Promise<void> {
+    await this.initMediaPipe();
   }
 
-  /**
-   * Processes input video file frame-by-frame and calculates facial expression weights.
-   */
-  public async processVideo(file: File, stepSeconds: number = 0.2): Promise<EmotionFrame[]> {
-    // Ensure ML models are loaded prior to video processing
-    await this.initMediaPipe();
+  private faceLandmarker: FaceLandmarker | null = null;
 
-    if (!this.landmarker) throw new Error('MediaPipe not initialized');
+  constructor() {
+    this.initMediaPipe();
+  }
+
+  private async initMediaPipe(): Promise<void> {
+    if (this.faceLandmarker) return;
+
+    try {
+      const filesetResolver = await FilesetResolver.forVisionTasks(
+        'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm',
+      );
+
+      this.faceLandmarker = await FaceLandmarker.createFromOptions(filesetResolver, {
+        baseOptions: {
+          modelAssetPath:
+            'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task',
+          delegate: 'CPU',
+        },
+        outputFaceBlendshapes: true,
+        runningMode: 'IMAGE',
+      });
+
+      this.isReady.set(true);
+    } catch (err) {
+      console.error('Failed to initialize MediaPipe:', err);
+    }
+  }
+
+  public async processVideo(file: File, stepSeconds: number = 0.2): Promise<EmotionFrame[]> {
+    if (!this.faceLandmarker) {
+      await this.initMediaPipe();
+    }
+    if (!this.faceLandmarker) throw new Error('MediaPipe not initialized');
 
     this.isProcessing.set(true);
     this.progress.set(0);
@@ -69,11 +70,20 @@ export class VideoProcessorService {
       canvas.height = video.videoHeight || 360;
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-      // Perform detection on current canvas frame
-      const detection = this.landmarker.detect(canvas);
-      const categories = detection.faceBlendshapes[0]?.categories || [];
+      const imageBitmap = await createImageBitmap(canvas);
+      const timestamp = Number(currentTime.toFixed(1));
 
-      results.push(this.parseBlendshapes(categories, currentTime));
+      try {
+        const result = this.faceLandmarker.detect(imageBitmap);
+        imageBitmap.close();
+
+        const blendshapes = result.faceBlendshapes[0]?.categories || [];
+        const frameData = this.parseBlendshapes(blendshapes, timestamp);
+        results.push(frameData);
+      } catch (err) {
+        imageBitmap.close();
+        console.error('Frame processing failed at time:', timestamp, err);
+      }
 
       currentTime += stepSeconds;
       this.progress.set(Math.min(100, Math.round((currentTime / duration) * 100)));
@@ -84,9 +94,6 @@ export class VideoProcessorService {
     return results;
   }
 
-  /**
-   * Maps MediaPipe blendshape coefficients into high-level emotion categories.
-   */
   private parseBlendshapes(
     categories: Array<{ categoryName: string; score: number }>,
     timestamp: number,
@@ -101,7 +108,7 @@ export class VideoProcessorService {
       (getScore('mouthFrownLeft') + getScore('mouthFrownRight') + getScore('browOuterUpLeft')) / 3;
 
     return {
-      timestamp: Number(timestamp.toFixed(1)),
+      timestamp,
       joy: Number(joy.toFixed(2)),
       surprise: Number(surprise.toFixed(2)),
       anger: Number(anger.toFixed(2)),

@@ -7,17 +7,6 @@ export interface EmotionFrame {
   sadness: number; // Sadness level (0.0 to 1.0)
 }
 
-// Commands sent from Main Thread (Angular) to Web Worker
-export type WorkerInputMessage =
-  | { type: 'INIT' }
-  | { type: 'PROCESS_FRAME'; payload: { imageBitmap: ImageBitmap; timestamp: number } };
-
-// Messages sent from Web Worker back to Main Thread
-export type WorkerOutputMessage =
-  | { type: 'READY' }
-  | { type: 'FRAME_PROCESSED'; payload: EmotionFrame }
-  | { type: 'ERROR'; payload: string };
-
 export interface DemoMockData {
   fileName: string;
   duration: number;
@@ -28,4 +17,15 @@ export interface DemoMockData {
     anger: number[];
     sadness: number[];
   };
+}
+
+export interface MarkLineOptions {
+  symbol: string[];
+  label: { show: boolean };
+  lineStyle: {
+    color: string;
+    type: string;
+    width: number;
+  };
+  data: Array<{ xAxis: string }>;
 }
